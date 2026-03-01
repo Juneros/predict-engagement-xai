@@ -1,0 +1,25 @@
+ACTIVE LEARNING METHOD IMPACT ANALYSIS (SHAP)
+==================================================
+
+Model Analyzed: Neural Network
+Data Samples: 500
+
+Aggregate Importance by Method:
+------------------------------
+Flipped Classroom        : 0.9800
+Project-Based Learning   : 0.8527
+Peer Instruction         : 0.3536
+
+
+Top 10 Individual Features Driving Predictions:
+------------------------------
+1. video_completion_rate    : 0.6385
+2. on_time_rate             : 0.5539
+3. days_accessed            : 0.2689
+4. total_clicks             : 0.0552
+5. project_based_learning_adoption: 0.0205
+6. forum_posts              : 0.0205
+7. flipped_classroom        : 0.0097
+8. resource_downloads       : 0.0094
+9. peer_instruction_intensity: 0.0091
+10. peer_instruction_adoption: 0.0090
