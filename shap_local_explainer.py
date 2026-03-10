@@ -46,6 +46,7 @@ class LocalExplainer:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(LocalExplainer, cls).__new__(cls)
+            # ✅ 修复：确保 _initialize 在实例创建时调用，且缩进正确
             cls._instance._initialize()
         return cls._instance
     
@@ -81,15 +82,15 @@ class LocalExplainer:
             raise e
         
         # 3. Load Background Data for SHAP
-        # We load a small sample from the training set or test set to represent data distribution
-        # Using a fixed sample ensures consistency
         background_path = PROCESSED_DIR / "X_train.csv"
         if not background_path.exists():
             background_path = PROCESSED_DIR / "X_test.csv"
             
         full_data = pd.read_csv(background_path)
-        # Sample 100 rows for speed
-        self._background_data = full_data.sample(n=100, random_state=42)
+        
+        # ⚠️ 修改点 A: 对于 KernelExplainer，背景数据越少越快，50行通常足够代表分布
+        bg_sample_size = min(50, len(full_data))
+        self._background_data = full_data.sample(n=bg_sample_size, random_state=42)
         self._feature_names = self._background_data.columns.tolist()
         
         print(f"   📊 Background data sampled: {len(self._background_data)} rows")
@@ -99,10 +100,26 @@ class LocalExplainer:
             self._explainer = shap.TreeExplainer(self._model)
             print(f"   🌲 Using TreeExplainer")
         else:
-            # For NN and LR
+            # For NN and LR (KernelExplainer)
             def model_predict(data):
-                return self._model.predict(data)
-            self._explainer = shap.KernelExplainer(model_predict, self._background_data)
+                preds = self._model.predict(data)
+                return np.array(preds)
+            
+            # ⚠️ 修改点 B: 显式设置 nsamples 防止 shape (0,1) 错误
+            nsamples_val = 100 
+            
+            print(f"   🧠 Initializing KernelExplainer with nsamples={nsamples_val}...")
+            
+            try:
+                self._explainer = shap.KernelExplainer(
+                    model_predict, 
+                    self._background_data,
+                    nsamples=nsamples_val
+                )
+            except Exception as e:
+                print(f"   ⚠️ KernelExplainer init failed with nsamples={nsamples_val}, trying 'auto'...")
+                self._explainer = shap.KernelExplainer(model_predict, self._background_data)
+                
             print(f"   🧠 Using KernelExplainer")
             
         print("✅ Local Explainer Initialized Successfully.")
@@ -110,23 +127,33 @@ class LocalExplainer:
     def explain_student(self, student_data):
         """
         Calculate SHAP values for a single student.
-        
-        Args:
-            student_data: pd.DataFrame or pd.Series with shape (1, n_features) or (n_features,)
-                          Must have the same columns as the training data.
-        
-        Returns:
-            dict: Contains 'shap_values', 'base_value', 'feature_names', 'predicted_class'
         """
         # Ensure input is DataFrame
         if isinstance(student_data, pd.Series):
             student_df = student_data.to_frame().T
+        elif isinstance(student_data, dict):
+            student_df = pd.DataFrame([student_data])
         else:
             student_df = student_data.reset_index(drop=True) if hasattr(student_data, 'reset_index') else pd.DataFrame(student_data)
             
-        # Align columns (in case order is different)
-        student_df = student_df[self._feature_names]
+        # ⚠️ 关键保护：确保只有一行数据
+        if len(student_df) > 1:
+            print(f"⚠️ Warning: Multiple rows detected ({len(student_df)}). Taking only the first row for explanation.")
+            student_df = student_df.iloc[:1]
         
+        if len(student_df) == 0:
+            raise ValueError("Input student data is empty!")
+
+        # Align columns strictly
+        try:
+            student_df = student_df[self._feature_names]
+        except KeyError as e:
+            missing_cols = set(self._feature_names) - set(student_df.columns)
+            raise KeyError(f"Missing columns in student data: {missing_cols}") from e
+            
+        # 确保数据类型是 float
+        student_df = student_df.astype(float)
+
         # Calculate SHAP values
         if hasattr(self._explainer, 'shap_values'):
             shap_output = self._explainer.shap_values(student_df)
@@ -134,16 +161,13 @@ class LocalExplainer:
             shap_output = self._explainer(student_df)
             
         # Handle Multi-class output
-        # If shap_output is a list (one array per class), we need to pick the one for the predicted class
         predicted_probs = self._model.predict_proba(student_df)[0]
         predicted_class_idx = np.argmax(predicted_probs)
         predicted_class_label = self._model.classes_[predicted_class_idx]
         
         if isinstance(shap_output, list):
             # Multi-class: list of arrays
-            # Select the SHAP values corresponding to the predicted class
             target_shap_values = shap_output[predicted_class_idx]
-            # Also keep all classes for potential detailed analysis
             all_class_shap = shap_output
         else:
             # Binary or Regression
@@ -163,12 +187,6 @@ class LocalExplainer:
     def get_pedagogy_contribution(self, explanation_result):
         """
         Aggregate SHAP values for specific pedagogy groups.
-        
-        Args:
-            explanation_result: Dict returned by explain_student()
-            
-        Returns:
-            dict: Mapping of Pedagogy Name -> Total SHAP Contribution
         """
         shap_vals = explanation_result["shap_values"]
         features = explanation_result["feature_names"]
