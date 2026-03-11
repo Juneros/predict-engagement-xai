@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../assets/css/theme.css';
-import StarfieldBackground from '../components/StarfieldBackground';
+import StarfieldBackground from '../components/StarfieldBackground'; 
 import { useNavigate } from 'react-router-dom'; 
 
 const Login = () => {
@@ -25,6 +25,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    
     setTimeout(() => {
       console.log('Login Attempt:', formData);
       
@@ -39,7 +40,6 @@ const Login = () => {
 
         console.log('用户信息已保存:', userInfo);
         
-        // ✅ 根据角色判断跳转路径
         if (formData.role === 'admin') {
           navigate('/admin');
         } else {
@@ -48,9 +48,7 @@ const Login = () => {
       } else {
         alert('未知角色');
         setIsLoading(false);
-        return;
       }
-      
     }, 1500);
   };
 
@@ -58,37 +56,29 @@ const Login = () => {
     <>
       <StarfieldBackground />
       
-      <div className="min-h-screen flex items-center justify-center relative">
-        <div className="glass-panel" style={{ width: '100%', maxWidth: '500px', padding: '2rem' }}>
+      <div className="min-h-screen flex items-center justify-center relative p-4">
+        
+        <div className="glass-panel">
           
-          {/* ✅ Logo 容器：添加 display: flex 和 justifyContent: center 确保绝对居中 */}
-          <div className="logo-container" style={{ 
-            marginBottom: '1.5rem', 
-            textAlign: 'center',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
+          {/* ✅ Logo 区域：已修复居中问题 */}
+          <div className="logo-container" style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
             <img 
               src="/src/assets/images/logo.png" 
               alt="EduVision Logo" 
               className="logo-image"
-              style={{ maxHeight: '80px', objectFit: 'contain', display: 'block' }}
+              style={{ display: 'block' }}
             />
           </div>
           
-          {/* 标题 */}
-          <h1 className="brand-title" style={{ textAlign: 'center', marginBottom: '0.5rem' }}>EduVision·育见未来</h1>
+          <h1 className="brand-title">EduVision·育见未来</h1>
           
-          {/* Slogans */}
-          <div className="slogan-container" style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <p className="english-slogan" style={{ margin: '0 0 0.25rem 0', fontStyle: 'italic' }}>"Insight Today, Vision Tomorrow."</p>
-            <p className="chinese-slogan" style={{ margin: 0, opacity: 0.7 }}>洞察此刻，遇见未来</p>
+          <div className="slogan-container">
+            <p className="english-slogan">"Insight Today, Vision Tomorrow."</p>
+            <p className="chinese-slogan">洞察此刻，遇见未来</p>
           </div>
 
           <form onSubmit={handleSubmit}>
             
-            {/* 用户名 */}
             <div style={{ marginBottom: '1rem' }}>
               <input
                 type="text"
@@ -97,13 +87,11 @@ const Login = () => {
                 onChange={handleInputChange}
                 placeholder="Enter your ID or Email"
                 className="input-dark"
-                style={{ width: '100%', boxSizing: 'border-box' }}
                 required
               />
             </div>
 
-            {/* 密码 */}
-            <div style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
               <input
                 type="password"
                 name="password"
@@ -111,92 +99,64 @@ const Login = () => {
                 onChange={handleInputChange}
                 placeholder="••••••••"
                 className="input-dark"
-                style={{ width: '100%', boxSizing: 'border-box' }}
                 required
               />
             </div>
 
-            {/* 【修改点1】角色选择：完全使用内联样式强制并排 */}
             <div style={{ 
               display: 'flex', 
               gap: '12px', 
               width: '100%', 
-              marginBottom: '1.5rem' 
+              marginBottom: '2rem' 
             }}>
               <button
                 type="button"
                 onClick={() => handleRoleChange('teacher')}
-                className={formData.role === 'teacher' ? 'active' : ''}
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '10px 0',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  background: formData.role === 'teacher' ? 'rgba(139, 92, 246, 0.8)' : 'rgba(255,255,255,0.05)',
-                  color: formData.role === 'teacher' ? '#fff' : 'rgba(255,255,255,0.6)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
+                className={`role-button ${formData.role === 'teacher' ? 'active' : ''}`}
               >
-                Teacher
+                <span>👨‍</span>
+                <span>Teacher</span>
               </button>
               
               <button
                 type="button"
                 onClick={() => handleRoleChange('admin')}
-                className={formData.role === 'admin' ? 'active' : ''}
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '10px 0',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  background: formData.role === 'admin' ? 'rgba(139, 92, 246, 0.8)' : 'rgba(255,255,255,0.05)',
-                  color: formData.role === 'admin' ? '#fff' : 'rgba(255,255,255,0.6)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
+                className={`role-button ${formData.role === 'admin' ? 'active' : ''}`}
               >
-                Admin
+                <span>🛡️</span>
+                <span>Admin</span>
               </button>
             </div>
 
-            {/* 提交按钮 */}
             <button
               type="submit"
               disabled={isLoading}
               className="btn-primary"
               style={{
-                width: '100%',
-                padding: '12px 0',
-                borderRadius: '8px',
-                background: 'linear-gradient(to right, #8b5cf6, #6366f1)',
-                color: 'white',
-                border: 'none',
-                fontWeight: 'bold',
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-                opacity: isLoading ? 0.7 : 1
+                opacity: isLoading ? 0.7 : 1,
+                cursor: isLoading ? 'not-allowed' : 'pointer'
               }}
             >
-              {isLoading ? 'Verifying...' : 'Sign In to EduVision'}
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  Verifying...
+                </span>
+              ) : (
+                'Sign In to EduVision'
+              )}
             </button>
           </form>
 
-          {/* 【修改点2】版权信息：强制居中、缩小、大间距 */}
           <div style={{
-            marginTop: '3.5rem',
-            borderTop: '1px solid rgba(255,255,255,0.1)',
+            marginTop: '3rem',
+            borderTop: '1px solid var(--border-color, rgba(0,0,0,0.05))',
             paddingTop: '1.5rem',
             textAlign: 'center'
           }}>
             <p style={{
               fontSize: '10px',
-              color: 'rgba(255,255,255,0.5)',
+              color: 'var(--text-muted, #9ca3af)', 
               margin: 0,
               lineHeight: '1.5'
             }}>

@@ -38,7 +38,6 @@ const DataManagement = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   
-  // 状态管理
   const [sources, setSources] = useState(INITIAL_SOURCES);
   const [dragActive, setDragActive] = useState(false);
   const [uploadState, setUploadState] = useState('idle'); // idle, uploading, preview, success
@@ -46,7 +45,6 @@ const DataManagement = () => {
   const [previewData, setPreviewData] = useState([]);
   const [progress, setProgress] = useState(0);
 
-  // 处理拖拽事件
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -57,7 +55,6 @@ const DataManagement = () => {
     }
   };
 
-  // 处理文件放置
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -67,26 +64,23 @@ const DataManagement = () => {
     }
   };
 
-  // 处理文件选择
   const handleChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       handleFile(e.target.files[0]);
     }
   };
 
-  // 模拟文件处理流程
   const handleFile = (file) => {
     setSelectedFile(file);
     setUploadState('uploading');
     setProgress(0);
 
-    // 模拟上传进度
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setUploadState('preview');
-          setPreviewData(MOCK_PREVIEW_DATA); // 加载模拟预览数据
+          setPreviewData(MOCK_PREVIEW_DATA);
           return 100;
         }
         return prev + 10;
@@ -94,10 +88,8 @@ const DataManagement = () => {
     }, 200);
   };
 
-  // 确认导入
   const confirmImport = () => {
     setUploadState('success');
-    // 更新列表状态
     const newSources = sources.map(s => 
       s.id === 1 ? { ...s, lastSync: '刚刚', status: 'success', records: (parseInt(s.records.replace(/,/g, '')) + 5).toLocaleString() } : s
     );
@@ -117,14 +109,12 @@ const DataManagement = () => {
     setProgress(0);
   };
 
-  // 手动触发同步
   const triggerSync = (id) => {
     const updated = sources.map(s => 
       s.id === id ? { ...s, status: 'syncing' } : s
     );
     setSources(updated);
 
-    // 模拟同步完成
     setTimeout(() => {
       setSources(prev => prev.map(s => 
         s.id === id ? { ...s, status: 'success', lastSync: '刚刚' } : s
@@ -133,24 +123,26 @@ const DataManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f111a] text-gray-100 font-sans flex flex-col">
+    // ✅ 修改：主背景改为浅薰衣草色
+    <div className="min-h-screen bg-[#FAF5FF] text-slate-800 font-sans flex flex-col">
       
       {/* --- 顶部导航栏 --- */}
-      <header className="h-16 border-b border-white/5 bg-[#0f111a]/80 backdrop-blur-md flex items-center justify-between px-6 z-20 shrink-0 sticky top-0">
+      {/* ✅ 修改：顶栏改为白底 + 淡紫边框 */}
+      <header className="h-16 border-b border-violet-100 bg-white/80 backdrop-blur-md flex items-center justify-between px-6 z-20 shrink-0 sticky top-0">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => navigate('/admin')} 
-            className="p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white transition-colors"
+            className="p-2 hover:bg-violet-50 rounded-lg text-slate-500 hover:text-violet-600 transition-colors"
           >
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h2 className="text-xl font-semibold text-white">数据源管理</h2>
-            <p className="text-xs text-gray-500">管理系统数据接入与 ETL 流程</p>
+            <h2 className="text-xl font-semibold text-violet-900">数据源管理</h2>
+            <p className="text-xs text-slate-500">管理系统数据接入与 ETL 流程</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-           <span className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+           <span className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 shadow-sm">
              <Database size={14} />
              系统运行正常
            </span>
@@ -158,23 +150,24 @@ const DataManagement = () => {
       </header>
 
       {/* --- 主内容区 --- */}
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-thin scrollbar-thumb-violet-200 scrollbar-track-transparent">
         <div className="max-w-7xl mx-auto space-y-6">
           
-          {/* 1. 上传区域 (如果未处于成功状态则显示) */}
+          {/* 1. 上传区域 */}
           {uploadState !== 'success' && (
-            <div className="bg-[#161b29] border border-white/5 rounded-xl p-8 shadow-xl">
+            // ✅ 修改：卡片改为白底
+            <div className="bg-white border border-violet-100 rounded-xl p-8 shadow-sm">
               <div className="text-center mb-6">
-                <h3 className="text-lg font-bold text-white mb-2">上传新数据源</h3>
-                <p className="text-sm text-gray-400">支持 .CSV, .XLSX 格式。系统将自动清洗并合并至主数据库。</p>
+                <h3 className="text-lg font-bold text-slate-800 mb-2">上传新数据源</h3>
+                <p className="text-sm text-slate-500">支持 .CSV, .XLSX 格式。系统将自动清洗并合并至主数据库。</p>
               </div>
 
               {uploadState === 'idle' && (
                 <div 
                   className={`relative border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer ${
                     dragActive 
-                      ? 'border-violet-500 bg-violet-500/10 scale-[1.01]' 
-                      : 'border-white/10 hover:border-white/20 hover:bg-white/5'
+                      ? 'border-violet-500 bg-violet-50 scale-[1.01]' 
+                      : 'border-slate-300 hover:border-violet-400 hover:bg-slate-50'
                   }`}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
@@ -190,52 +183,54 @@ const DataManagement = () => {
                     onChange={handleChange}
                   />
                   <div className="flex flex-col items-center gap-4">
-                    <div className={`p-4 rounded-full ${dragActive ? 'bg-violet-500 text-white' : 'bg-white/5 text-gray-400'}`}>
+                    <div className={`p-4 rounded-full transition-colors ${dragActive ? 'bg-violet-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
                       <Upload size={32} />
                     </div>
                     <div>
-                      <p className="text-white font-medium">点击上传 或 拖拽文件至此</p>
-                      <p className="text-xs text-gray-500 mt-1">最大支持 500MB</p>
+                      <p className="text-slate-700 font-medium">点击上传 或 拖拽文件至此</p>
+                      <p className="text-xs text-slate-400 mt-1">最大支持 500MB</p>
                     </div>
                   </div>
                 </div>
               )}
 
               {uploadState === 'uploading' && (
-                <div className="py-12 px-6 bg-white/5 rounded-xl border border-white/10">
+                // ✅ 修改：进度条容器改为浅灰底
+                <div className="py-12 px-6 bg-slate-50 rounded-xl border border-slate-200">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <FileSpreadsheet className="text-violet-400" size={24} />
-                      <span className="text-white font-medium truncate max-w-xs">{selectedFile?.name}</span>
+                      <FileSpreadsheet className="text-violet-600" size={24} />
+                      <span className="text-slate-800 font-medium truncate max-w-xs">{selectedFile?.name}</span>
                     </div>
-                    <span className="text-violet-400 font-mono text-sm">{progress}%</span>
+                    <span className="text-violet-600 font-mono text-sm font-bold">{progress}%</span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                  <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
                     <div 
-                      className="bg-violet-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+                      className="bg-violet-600 h-2.5 rounded-full transition-all duration-300 ease-out shadow-sm" 
                       style={{ width: `${progress}%` }}
                     ></div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-4 text-center animate-pulse">正在解析文件结构并校验数据完整性...</p>
-                  <button onClick={cancelUpload} className="mt-4 text-xs text-rose-400 hover:text-rose-300 underline">取消上传</button>
+                  <p className="text-xs text-slate-500 mt-4 text-center animate-pulse">正在解析文件结构并校验数据完整性...</p>
+                  <button onClick={cancelUpload} className="mt-4 text-xs text-rose-600 hover:text-rose-700 underline font-medium">取消上传</button>
                 </div>
               )}
 
               {uploadState === 'preview' && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                  <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-lg">
+                  {/* ✅ 修改：成功提示框改为浅绿底 */}
+                  <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 p-4 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <CheckCircle className="text-emerald-400" size={24} />
+                      <CheckCircle className="text-emerald-600" size={24} />
                       <div>
-                        <p className="text-emerald-400 font-medium">文件解析成功</p>
-                        <p className="text-xs text-emerald-500/80">检测到 {previewData.length} 条样本数据，格式符合标准。</p>
+                        <p className="text-emerald-800 font-medium">文件解析成功</p>
+                        <p className="text-xs text-emerald-600/80">检测到 {previewData.length} 条样本数据，格式符合标准。</p>
                       </div>
                     </div>
                     <div className="flex gap-3">
-                      <button onClick={cancelUpload} className="px-4 py-2 text-sm text-gray-300 hover:text-white border border-white/10 rounded-lg hover:bg-white/5 transition-colors">
+                      <button onClick={cancelUpload} className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 border border-slate-200 rounded-lg hover:bg-white transition-colors">
                         重新选择
                       </button>
-                      <button onClick={confirmImport} className="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-lg shadow-emerald-900/20 transition-all active:scale-95 flex items-center gap-2">
+                      <button onClick={confirmImport} className="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-md shadow-emerald-600/20 transition-all active:scale-95 flex items-center gap-2">
                         <Upload size={16} />
                         确认导入数据库
                       </button>
@@ -243,13 +238,14 @@ const DataManagement = () => {
                   </div>
 
                   {/* 数据预览表 */}
-                  <div className="border border-white/10 rounded-lg overflow-hidden bg-[#0f111a]">
-                    <div className="px-4 py-2 bg-white/5 border-b border-white/10 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  {/* ✅ 修改：表格改为白底深字 */}
+                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm">
+                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
                       数据预览 (前 5 行)
                     </div>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-sm text-gray-400">
-                        <thead className="bg-white/5 text-gray-300 text-xs uppercase">
+                      <table className="w-full text-left text-sm text-slate-600">
+                        <thead className="bg-slate-50 text-slate-700 text-xs uppercase font-semibold">
                           <tr>
                             <th className="px-4 py-3">Student ID</th>
                             <th className="px-4 py-3">Event Type</th>
@@ -258,14 +254,14 @@ const DataManagement = () => {
                             <th className="px-4 py-3">Source</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5 font-mono text-xs">
+                        <tbody className="divide-y divide-slate-100 font-mono text-xs">
                           {previewData.map((row, idx) => (
-                            <tr key={idx} className="hover:bg-white/5">
-                              <td className="px-4 py-3 text-violet-300">{row.student_id}</td>
+                            <tr key={idx} className="hover:bg-violet-50 transition-colors">
+                              <td className="px-4 py-3 text-violet-700 font-bold">{row.student_id}</td>
                               <td className="px-4 py-3">{row.event}</td>
                               <td className="px-4 py-3">{row.timestamp}</td>
                               <td className="px-4 py-3">{row.duration}</td>
-                              <td className="px-4 py-3"><span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">{row.source}</span></td>
+                              <td className="px-4 py-3"><span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-sans">{row.source}</span></td>
                             </tr>
                           ))}
                         </tbody>
@@ -277,28 +273,30 @@ const DataManagement = () => {
             </div>
           )}
 
-          {/* 成功提示 Toast (模拟) */}
+          {/* 成功提示 Toast */}
           {uploadState === 'success' && (
-            <div className="bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 px-6 py-4 rounded-xl flex items-center justify-between animate-in slide-in-from-top-4 fade-in duration-300">
+            // ✅ 修改：Toast 改为浅绿底深绿字
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-6 py-4 rounded-xl flex items-center justify-between animate-in slide-in-from-top-4 fade-in duration-300 shadow-sm">
               <div className="flex items-center gap-3">
-                <CheckCircle size={24} />
+                <CheckCircle size={24} className="text-emerald-600" />
                 <div>
                   <h4 className="font-bold">数据导入成功</h4>
                   <p className="text-sm opacity-80">已新增 5 条记录至 LMS 日志库，模型将在下次训练时自动纳入。</p>
                 </div>
               </div>
-              <button onClick={() => setUploadState('idle')} className="p-2 hover:bg-white/10 rounded-lg"><X size={20}/></button>
+              <button onClick={() => setUploadState('idle')} className="p-2 hover:bg-emerald-100 rounded-lg text-emerald-600"><X size={20}/></button>
             </div>
           )}
 
           {/* 2. 现有数据源列表 */}
-          <div className="bg-[#161b29] border border-white/5 rounded-xl p-6 shadow-xl">
+          {/* ✅ 修改：卡片改为白底 */}
+          <div className="bg-white border border-violet-100 rounded-xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Server size={20} className="text-blue-400" />
+              <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                <Server size={20} className="text-blue-600" />
                 已连接数据源
               </h3>
-              <button className="text-xs flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors">
+              <button className="text-xs flex items-center gap-1 text-violet-600 hover:text-violet-800 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-lg transition-colors font-medium">
                 <RefreshCw size={14} />
                 刷新状态
               </button>
@@ -306,25 +304,25 @@ const DataManagement = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {sources.map((source) => (
-                <div key={source.id} className="bg-white/5 border border-white/5 rounded-lg p-4 hover:border-white/10 transition-colors group">
+                <div key={source.id} className="bg-white border border-slate-200 rounded-lg p-4 hover:border-violet-300 hover:shadow-md transition-all group">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-lg ${
-                        source.type === 'API' ? 'bg-orange-500/10 text-orange-400' : 
-                        source.type === 'Excel' ? 'bg-emerald-500/10 text-emerald-400' : 
-                        'bg-blue-500/10 text-blue-400'
+                        source.type === 'API' ? 'bg-orange-50 text-orange-600' : 
+                        source.type === 'Excel' ? 'bg-emerald-50 text-emerald-600' : 
+                        'bg-blue-50 text-blue-600'
                       }`}>
                         {source.type === 'API' ? <Cloud size={20} /> : <FileSpreadsheet size={20} />}
                       </div>
                       <div>
-                        <h4 className="text-white font-medium text-sm">{source.name}</h4>
-                        <p className="text-xs text-gray-500 font-mono">{source.records} 条记录</p>
+                        <h4 className="text-slate-800 font-bold text-sm">{source.name}</h4>
+                        <p className="text-xs text-slate-500 font-mono bg-slate-100 inline-block px-1 rounded mt-0.5">{source.records} 条</p>
                       </div>
                     </div>
-                    <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium ${
-                      source.status === 'success' ? 'bg-emerald-500/10 text-emerald-400' :
-                      source.status === 'syncing' ? 'bg-amber-500/10 text-amber-400 animate-pulse' :
-                      'bg-rose-500/10 text-rose-400'
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${
+                      source.status === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      source.status === 'syncing' ? 'bg-amber-50 text-amber-700 border-amber-200 animate-pulse' :
+                      'bg-rose-50 text-rose-700 border-rose-200'
                     }`}>
                       {source.status === 'success' ? <CheckCircle size={12}/> : 
                        source.status === 'syncing' ? <RefreshCw size={12} className="animate-spin"/> : 
@@ -333,15 +331,15 @@ const DataManagement = () => {
                     </span>
                   </div>
                   
-                  <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
                       <Clock size={12} />
                       <span>上次同步：{source.lastSync}</span>
                     </div>
                     <button 
                       onClick={() => triggerSync(source.id)}
                       disabled={source.status === 'syncing'}
-                      className="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 text-gray-300 rounded border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="text-xs px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 rounded border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-sm"
                     >
                       {source.status === 'syncing' ? '同步中...' : '立即同步'}
                     </button>
@@ -354,8 +352,8 @@ const DataManagement = () => {
         </div>
         
         {/* 底部版权 */}
-        <div className="mt-12 pt-6 border-t border-white/5 text-center pb-6">
-            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px' }}>
+        <div className="mt-12 pt-6 border-t border-violet-100 text-center pb-6">
+            <p style={{ fontSize: '10px', color: '#9ca3af', letterSpacing: '0.5px' }}>
               © 2026 EduVision AI Lab - Data Pipeline Manager
             </p>
         </div>

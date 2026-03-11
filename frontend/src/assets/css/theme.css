@@ -1,22 +1,36 @@
 /* 
- * Theme: EduVision (育见未来) - Enhanced Version
- * Style: Deep Space Grey + Tech Purple with Star Effects
+ * Theme: EduVision (育见未来) - Light Lavender Version
+ * Style: Soft Lavender + Clean White with Gentle Shadows
  * Slogan: Insight Today, Vision Tomorrow.
  */
 
  :root {
-  /* 核心色板 */
-  --bg-deep: #0f172a;
-  --bg-card: #1e293b;
-  --primary-purple: #8b5cf6;
-  --primary-purple-hover: #7c3aed;
-  --primary-purple-light: #a78bfa;
-  --text-main: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
+  /* --- 核心色板 (浅色模式) --- */
+  
+  /* 背景色：极淡的薰衣草白，比纯白更柔和 */
+  --bg-deep: #FAF5FF;       
+  --bg-card: #FFFFFF;        /* 卡片纯白 */
+  
+  /* 主色调：柔和紫 (保持鲜艳但不过于刺眼) */
+  --primary-purple: #8B5CF6;
+  --primary-purple-hover: #7C3AED;
+  --primary-purple-light: #C4B5FD; /* 浅紫用于装饰 */
+  --primary-purple-bg: #F3E8FF;    /* 极淡紫用于选中状态背景 */
+  
+  /* 文字颜色：深紫色系代替纯黑，更协调 */
+  --text-main: #4C1D95;      /* 深紫作为主标题/正文 */
+  --text-secondary: #6D28D9; /* 中等紫色作为副标题 */
+  --text-muted: #9CA3AF;     /* 灰色用于占位符 */
+  
+  /* 功能色 (保持高对比度) */
+  --success: #059669;        /* 稍深的绿，确保在白色背景可见 */
+  --warning: #D97706;        /* 稍深的琥珀 */
+  --danger: #DC2626;         /* 稍深的红 */
+  
+  /* 边框与阴影 */
+  --border-color: #E9D5FF;   /* 淡紫色边框 */
+  --shadow-soft: 0 4px 6px -1px rgba(139, 92, 246, 0.1), 0 2px 4px -1px rgba(139, 92, 246, 0.06);
+  --shadow-hover: 0 10px 15px -3px rgba(139, 92, 246, 0.15), 0 4px 6px -2px rgba(139, 92, 246, 0.1);
 }
 
 * {
@@ -33,9 +47,15 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   position: relative;
+  /* 可选：添加一个极淡的径向渐变背景，增加层次感 */
+  background-image: radial-gradient(circle at 50% 0%, #F3E8FF 0%, transparent 70%);
 }
 
-/* 星轨背景容器 */
+/* 星轨背景容器 
+   ⚠️ 注意：浅色模式下，原本的“星星”如果是白色的会看不见。
+   如果你的 starfield 是 JS 生成的白色点，建议暂时隐藏或改为深紫色点。
+   这里先保留结构，你可能需要调整 JS 里的星星颜色。
+*/
 .starfield-container {
   position: fixed;
   top: 0;
@@ -44,20 +64,22 @@ body {
   height: 100%;
   pointer-events: none;
   z-index: -1;
+  /* 如果星星是白色的，取消下面这行的注释会让它们变暗一点，或者你在 JS 里改颜色更好 */
+  /* opacity: 0.3; */ 
 }
 
-/* 磨砂玻璃面板 - 添加了边距 */
+/* 磨砂玻璃面板 - 浅色版 */
 .glass-panel {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  padding: 2rem; /* 内边距 */
+  background: rgba(255, 255, 255, 0.85); /* 高透明度白色 */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color); /* 淡紫色边框 */
+  border-radius: 24px; /* 更圆润一点 */
+  box-shadow: var(--shadow-soft);
+  padding: 2.5rem;
   max-width: 480px;
   width: 90%;
-  margin: 2rem auto; /* 外边距 + 居中 */
+  margin: 3rem auto;
 }
 
 /* Logo 样式 */
@@ -71,73 +93,80 @@ body {
   height: 80px;
   border-radius: 16px;
   object-fit: cover;
-  border: 2px solid var(--primary-purple);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  border: 2px solid var(--primary-purple-light); /* 浅紫边框 */
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2); /* 柔和阴影 */
   transition: transform 0.3s ease;
+  background: white; /* 确保 logo 有白底 */
 }
 
 .logo-image:hover {
   transform: scale(1.05) rotate(5deg);
+  border-color: var(--primary-purple);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
 }
 
-/* 标题样式 - 居中放大 */
+/* 标题样式 */
 .brand-title {
   text-align: center;
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-light));
+  /* 渐变从深紫到亮紫 */
+  background: linear-gradient(135deg, var(--text-main), var(--primary-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 1rem;
-  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px; /* 字间距稍微收紧，更现代 */
 }
 
 /* Slogan 样式 */
 .slogan-container {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .english-slogan {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: var(--primary-purple-light);
+  color: var(--primary-purple);
   margin-bottom: 0.5rem;
   font-style: italic;
+  letter-spacing: 0.5px;
 }
 
 .chinese-slogan {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--text-secondary);
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
-/* 输入框样式 */
+/* 输入框样式 - 浅色版 */
 .input-dark {
   width: 100%;
-  padding: 12px 16px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  padding: 14px 16px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-color); /* 明显的边框 */
   border-radius: 12px;
   color: var(--text-main);
   font-size: 1rem;
   transition: all 0.3s ease;
   outline: none;
   margin-bottom: 1rem;
+  font-weight: 500;
 }
 
 .input-dark:focus {
   border-color: var(--primary-purple);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 0 0 4px var(--primary-purple-bg); /* 紫色光晕 */
+  background: #FFFFFF;
 }
 
 .input-dark::placeholder {
   color: var(--text-muted);
+  font-weight: 400;
 }
 
-/* 主按钮样式 */
+/* 主按钮样式 - 浅色版 */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-hover));
   color: white;
@@ -147,8 +176,8 @@ body {
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 14px 0 rgba(139, 92, 246, 0.39);
-  padding: 12px 24px;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  padding: 14px 24px;
   width: 100%;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -156,20 +185,20 @@ body {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px 0 rgba(139, 92, 246, 0.5);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
 }
 
 .btn-primary:active {
   transform: translateY(0);
 }
 
-/* 角色选择按钮 */
+/* 角色选择按钮 - 浅色版 */
 .role-button {
   flex: 1;
-  padding: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  padding: 14px;
+  border: 1.5px solid var(--border-color);
   border-radius: 12px;
-  background: transparent;
+  background: #FFFFFF;
   color: var(--text-secondary);
   font-weight: 600;
   cursor: pointer;
@@ -182,21 +211,24 @@ body {
 
 .role-button.active {
   border-color: var(--primary-purple);
-  background: rgba(139, 92, 246, 0.1);
-  color: var(--primary-purple-light);
+  background: var(--primary-purple-bg); /* 淡紫背景 */
+  color: var(--primary-purple);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
 }
 
 .role-button:hover:not(.active) {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--primary-purple-light);
+  background: #F9FAFB;
+  color: var(--text-main);
 }
 
-/* 加载动画 */
+/* 加载动画 - 调整为紫色 */
 .loading-spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid white;
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--primary-purple);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -209,8 +241,8 @@ body {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .glass-panel {
-    margin: 1rem;
-    padding: 1.5rem;
+    margin: 1.5rem;
+    padding: 2rem;
   }
   
   .brand-title {
